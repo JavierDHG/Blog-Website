@@ -1,0 +1,25 @@
+{% extends 'layouts/layout.html' %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% block title %} {{title}} {% endblock %}
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    {% block content %}
+    <h1>Home</h1>
+
+    <div>
+      {% if user.is_authenticated %}
+        <h1>Bienvenido {{user.first_name}} {{user.last_name }}</h1>
+      {% else %}
+        <h1>No has iniciado sesion</h1>
+      {% endif %}
+    </div>
+    <div>
+      {% include 'show_post/Public_post.html' %}
+    </div>
+    {% endblock %}
+  </body>
+</html>

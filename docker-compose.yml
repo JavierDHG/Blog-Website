@@ -1,0 +1,34 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - media_volume:/app/media
+      - static_volume:/app/static
+    depends_on:
+      - db
+    environment:
+      - DEBUG=1
+      - DATABASE_NAME=blog_website_db
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=persia098
+      - DATABASE_HOST=db
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: blog_website_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: persia098
+    command: postgres -c listen_addresses='*'  # Aceptar conexiones de cualquier IP 
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    {% block content %}
+    <div>
+      <p>Lista de posts</p>
+      <ul>
+        {% for post in posts %}
+        <form method="get" action="{% url 'view_post' post.id %}">
+          <article>
+            <img src="{{post.imagen_post.url}}" alt="imagen de post" />
+            <h2>{{post.title}}</h2>
+            <p>{{post.content|truncatewords:10}}</p>
+          </article>
+          <input type="submit" onclick="" value="Ver Post" />
+        </form>
+        {% endfor %}
+      </ul>
+      <p>{{posts}}</p>
+    </div>
+    {% endblock %}
+  </body>
+</html>
