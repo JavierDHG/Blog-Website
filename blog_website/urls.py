@@ -25,6 +25,7 @@ urlpatterns = [
     path('', include('mainweb.urls')),
     path('', include('pages.urls')),
     path('pagina/<str:slug>/', views.page, name='page'),
+    path('__reload__/', include('django_browser_reload.urls')),
 ]
 
 if settings.DEBUG:

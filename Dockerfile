@@ -7,6 +7,10 @@ WORKDIR /app
 # Copia los archivos de requerimientos
 COPY requirements.txt .
 
+RUN apt-get update && apt-get install -y curl
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+RUN apt-get install -y nodejs
+
 # Instala dependencias
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
