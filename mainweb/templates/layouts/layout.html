@@ -1,13 +1,9 @@
-{% load static tailwind_tags %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %} {% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    {% tailwind_css %}
 </head>
 <body>
     <header>
@@ -16,8 +12,8 @@
         </div>
         
     </header>
-    <nav class="flex flex-row gap-4 p-4 bg-gray-200">
-        <ul class="flex flex-row gap-4">
+    <nav>
+        <ul>
             <a href="{% url "show_post" %}">Inicio</a>
             <a href="{% url "login" %}">Login</a>
             <a href="{% url "register" %}">Register</a>
