@@ -13,7 +13,7 @@ def create_post(request):
             title = request.POST.get('title')
             content = request.POST.get('content')
             post = Blog.objects.create(
-                imagen_post=image, title=title, content=content, autor_id=request.user.id
+                imagen_post=image, title=title, content=content, autor=request.user
             )
             post.save()
             messages.success(
@@ -23,6 +23,7 @@ def create_post(request):
     return render(request, 'create_post/post_create.html', {
         'title': 'Create Post'
     })
+    
 
 def page(request, slug):
 

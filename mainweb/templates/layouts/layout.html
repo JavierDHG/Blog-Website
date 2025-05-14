@@ -11,6 +11,8 @@
       type="text/css"
       rel="stylesheet"
     />
+     <!-- Bloque para CSS específico de cada página -->
+    {% block page_css %}{% endblock %}
   </head>
   <body>
     <!-- Navbar mejorado -->
@@ -79,12 +81,26 @@
                 </svg>
               </div>
               <div class="dropdown-menu" id="auth-dropdown-menu">
+                {% if user.is_authenticated %}
+                <a href="" class="dropdown-item"
+                  >Perfil</a
+                >
+                {% endif %}
+                {% if user.is_authenticated %}
+                <a href="" class="dropdown-item"
+                  >Mis Posts</a
+                >
+                {% endif %}
+                {% if not user.is_authenticated %}
                 <a href="{% url 'login' %}" class="dropdown-item"
                   >Iniciar sesión</a
                 >
+                {% endif %}
+                {% if not user.is_authenticated %}
                 <a href="{% url 'register' %}" class="dropdown-item"
                   >Registrarse</a
                 >
+                {% endif %}
                 <a href="{% url 'logout' %}" class="dropdown-item"
                   >Cerrar sesión</a
                 >

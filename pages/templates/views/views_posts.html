@@ -1,14 +1,501 @@
 {% extends 'layouts/layout.html' %}
-
-<!DOCTYPE html>
-<html lang="en">
-  <body>
-    {% block content %}
-    <div>
-      <h2>{{post.title}}</h2>
-      <img src="{{post.imagen_post.url}}" alt="imagen de post" />
-      <p>{{post.content}}</p>
+{%load static %} 
+{% block page_css %}
+<link
+  rel="stylesheet"
+  href="{% static 'css/view_post.css' %}"
+  type="text/css"
+/>
+{% endblock %}
+{% block meta %}
+<meta name="description" content="{{ post.content|truncatechars:160 }}" />
+<meta property="og:title" content="{{ post.title }}" />
+<meta
+  property="og:description"
+  content="{{ post.content|truncatechars:160 }}"
+/>
+<meta property="og:image" content="{{ post.imagen_post.url }}" />
+<meta property="og:type" content="article" />
+<meta name="twitter:card" content="summary_large_image" />
+{% endblock %}
+{% block content %}
+<article class="post-detail">
+  <div class="post-header">
+    <div class="post-meta">
+      {% if post.categories.all %}
+      <div class="post-categories">
+        {% for category in post.categories.all %}
+        <a href="{% url 'category_posts' category.slug %}" class="post-category"
+          >{{ category.name }}</a
+        >
+        {% endfor %}
+      </div>
+      {% endif %}
+      <h1 class="post-title">{{ post.title }}</h1>
+      <div class="post-info">
+        {% if post.author %}
+        <div class="post-author">
+          {% if post.author.profile_image %}
+          <img
+            src="{{ post.author.profile_image.url }}"
+            alt="{{ post.author.username }}"
+            class="author-image"
+          />
+          {% else %}
+          <div class="author-initial">{{ post.author.username|first }}</div>
+          {% endif %}
+          <span
+            >Por
+            <a href="{% url 'author_posts' post.author.username %}"
+              >{{ post.author.get_full_name|default:post.author.username }}</a
+            ></span
+          >
+        </div>
+        {% endif %}
+        <div class="post-date">
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <time datetime="{{ post.created_at|date:'Y-m-d' }}"
+            >{{ post.created_at|date:"d F, Y" }}</time
+          >
+        </div>
+        {% if post.reading_time %}
+        <div class="reading-time">
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+          <span>{{ post.reading_time }} min de lectura</span>
+        </div>
+        {% endif %}
+      </div>
     </div>
-    {% endblock %}
-  </body>
-</html>
+
+    <div class="post-image-container">
+      <img
+        src="{{ post.imagen_post.url }}"
+        alt="{{ post.title }}"
+        class="post-image"
+        loading="lazy"
+      />
+      {% if post.image_caption %}
+      <figcaption class="image-caption">{{ post.image_caption }}</figcaption>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="post-content">
+    <div class="content-wrapper">
+      {{ post.content|safe }} {% if post.tags.all %}
+      <div class="post-tags">
+        {% for tag in post.tags.all %}
+        <a href="{% url 'tag_posts' tag.slug %}" class="post-tag"
+          >#{{ tag.name }}</a
+        >
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if post.author %}
+  <div class="author-bio">
+    <div class="author-image-container">
+      {% if post.author.profile_image %}
+      <img
+        src="{{ post.author.profile_image.url }}"
+        alt="{{ post.author.username }}"
+        class="author-bio-image"
+      />
+      {% else %}
+      <div class="author-bio-initial">{{ post.author.username|first }}</div>
+      {% endif %}
+    </div>
+    <div class="author-info">
+      <h3 class="author-name">
+        {{ post.author.get_full_name|default:post.author.username }}
+      </h3>
+      {% if post.author.bio %}
+      <p class="author-description">{{ post.author.bio }}</p>
+      {% endif %}
+      <div class="author-social">
+        {% if post.author.twitter %}
+        <a
+          href="{{ post.author.twitter }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="social-link"
+          aria-label="Twitter"
+        >
+          <svg
+            class="social-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"
+            ></path>
+          </svg>
+        </a>
+        {% endif %} {% if post.author.linkedin %}
+        <a
+          href="{{ post.author.linkedin }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="social-link"
+          aria-label="LinkedIn"
+        >
+          <svg
+            class="social-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"
+            ></path>
+            <rect x="2" y="9" width="4" height="12"></rect>
+            <circle cx="4" cy="4" r="2"></circle>
+          </svg>
+        </a>
+        {% endif %} {% if post.author.website %}
+        <a
+          href="{{ post.author.website }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="social-link"
+          aria-label="Sitio web"
+        >
+          <svg
+            class="social-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path
+              d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+            ></path>
+          </svg>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %} {% if related_posts %}
+  <div class="related-posts">
+    <h3 class="related-title">Artículos relacionados</h3>
+    <div class="related-grid">
+      {% for related in related_posts %}
+      <a href="{% url 'post_detail' related.slug %}" class="related-post">
+        <div class="related-image-container">
+          <img
+            src="{{ related.imagen_post.url }}"
+            alt="{{ related.title }}"
+            class="related-image"
+            loading="lazy"
+          />
+        </div>
+        <div class="related-content">
+          <h4 class="related-post-title">{{ related.title }}</h4>
+          <time
+            datetime="{{ related.created_at|date:'Y-m-d' }}"
+            class="related-date"
+            >{{ related.created_at|date:"d F, Y" }}</time
+          >
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %} {% if comments_enabled %}
+  <div class="comments-section">
+    <h3 class="comments-title">Comentarios ({{ comments.count }})</h3>
+
+    <form
+      class="comment-form"
+      method="post"
+      action="{% url 'add_comment' post.id %}"
+    >
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="comment-content" class="form-label"
+          >Deja tu comentario</label
+        >
+        <textarea
+          id="comment-content"
+          name="content"
+          class="comment-textarea"
+          required
+        ></textarea>
+      </div>
+      <button type="submit" class="comment-button">Publicar comentario</button>
+    </form>
+
+    <div class="comments-list">
+      {% for comment in comments %}
+      <div class="comment">
+        <div class="comment-header">
+          <div class="comment-author">
+            {% if comment.user.profile_image %}
+            <img
+              src="{{ comment.user.profile_image.url }}"
+              alt="{{ comment.user.username }}"
+              class="comment-author-image"
+            />
+            {% else %}
+            <div class="comment-author-initial">
+              {{ comment.user.username|first }}
+            </div>
+            {% endif %}
+            <span class="comment-author-name"
+              >{{ comment.user.get_full_name|default:comment.user.username
+              }}</span
+            >
+          </div>
+          <time
+            datetime="{{ comment.created_at|date:'Y-m-d H:i' }}"
+            class="comment-date"
+            >{{ comment.created_at|date:"d F, Y H:i" }}</time
+          >
+        </div>
+        <div class="comment-content">{{ comment.content }}</div>
+        <div class="comment-actions">
+          <button
+            class="comment-reply-button"
+            data-comment-id="{{ comment.id }}"
+          >
+            Responder
+          </button>
+        </div>
+
+        {% if comment.replies.all %}
+        <div class="comment-replies">
+          {% for reply in comment.replies.all %}
+          <div class="comment reply">
+            <div class="comment-header">
+              <div class="comment-author">
+                {% if reply.user.profile_image %}
+                <img
+                  src="{{ reply.user.profile_image.url }}"
+                  alt="{{ reply.user.username }}"
+                  class="comment-author-image"
+                />
+                {% else %}
+                <div class="comment-author-initial">
+                  {{ reply.user.username|first }}
+                </div>
+                {% endif %}
+                <span class="comment-author-name"
+                  >{{ reply.user.get_full_name|default:reply.user.username
+                  }}</span
+                >
+              </div>
+              <time
+                datetime="{{ reply.created_at|date:'Y-m-d H:i' }}"
+                class="comment-date"
+                >{{ reply.created_at|date:"d F, Y H:i" }}</time
+              >
+            </div>
+            <div class="comment-content">{{ reply.content }}</div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div
+          class="reply-form-container"
+          id="reply-form-{{ comment.id }}"
+          style="display: none"
+        >
+          <form
+            class="reply-form"
+            method="post"
+            action="{% url 'add_reply' comment.id %}"
+          >
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="reply-content-{{ comment.id }}" class="form-label"
+                >Tu respuesta</label
+              >
+              <textarea
+                id="reply-content-{{ comment.id }}"
+                name="content"
+                class="reply-textarea"
+                required
+              ></textarea>
+            </div>
+            <div class="reply-actions">
+              <button
+                type="button"
+                class="cancel-reply-button"
+                data-comment-id="{{ comment.id }}"
+              >
+                Cancelar
+              </button>
+              <button type="submit" class="reply-button">Responder</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      {% empty %}
+      <div class="no-comments">
+        <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</article>
+
+<script>
+
+      // Funcionalidad para copiar enlace
+      window.copyLink = function() {
+          const url = window.location.href;
+
+          // Crear un elemento de texto temporal
+          const tempInput = document.createElement('input');
+          tempInput.value = url;
+          document.body.appendChild(tempInput);
+
+          // Seleccionar y copiar el texto
+          tempInput.select();
+          document.execCommand('copy');
+
+          // Eliminar el elemento temporal
+          document.body.removeChild(tempInput);
+
+          // Mostrar notificación
+          const notification = document.createElement('div');
+          notification.textContent = '¡Enlace copiado!';
+          notification.style.position = 'fixed';
+          notification.style.bottom = '20px';
+          notification.style.left = '50%';
+          notification.style.transform = 'translateX(-50%)';
+          notification.style.backgroundColor = 'var(--success-color)';
+          notification.style.color = 'white';
+          notification.style.padding = '0.75rem 1.5rem';
+          notification.style.borderRadius = 'var(--border-radius)';
+          notification.style.boxShadow = 'var(--shadow)';
+          notification.style.zIndex = '1000';
+          notification.style.opacity = '0';
+          notification.style.transition = 'opacity 0.3s ease';
+
+          document.body.appendChild(notification);
+
+          // Mostrar y ocultar la notificación
+          setTimeout(() => {
+              notification.style.opacity = '1';
+
+              setTimeout(() => {
+                  notification.style.opacity = '0';
+
+                  setTimeout(() => {
+                      document.body.removeChild(notification);
+                  }, 300);
+              }, 2000);
+          }, 10);
+      };
+
+      // Funcionalidad para mostrar/ocultar formulario de respuesta
+      const replyButtons = document.querySelectorAll('.comment-reply-button');
+      const cancelButtons = document.querySelectorAll('.cancel-reply-button');
+
+      replyButtons.forEach(button => {
+          button.addEventListener('click', function() {
+              const commentId = this.getAttribute('data-comment-id');
+              const replyForm = document.getElementById(`reply-form-${commentId}`);
+
+              // Ocultar todos los formularios de respuesta
+              document.querySelectorAll('.reply-form-container').forEach(form => {
+                  form.style.display = 'none';
+              });
+
+              // Mostrar el formulario de respuesta seleccionado
+              replyForm.style.display = 'block';
+
+              // Enfocar el textarea
+              replyForm.querySelector('textarea').focus();
+          });
+      });
+
+      cancelButtons.forEach(button => {
+          button.addEventListener('click', function() {
+              const commentId = this.getAttribute('data-comment-id');
+              const replyForm = document.getElementById(`reply-form-${commentId}`);
+
+              replyForm.style.display = 'none';
+          });
+      });
+
+      // Lazy loading de imágenes
+      if ('loading' in HTMLImageElement.prototype) {
+          const images = document.querySelectorAll('img[loading="lazy"]');
+          images.forEach(img => {
+              img.src = img.src;
+          });
+      } else {
+          // Fallback para navegadores que no soportan lazy loading
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js';
+          document.body.appendChild(script);
+
+          document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+              img.classList.add('lazyload');
+              img.setAttribute('data-src', img.src);
+              img.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+          });
+      }
+
+      // Soporte para modo oscuro
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+      function setTheme(isDark) {
+          if (isDark) {
+              document.documentElement.classList.add('dark');
+              document.documentElement.classList.remove('light');
+          } else {
+              document.documentElement.classList.add('light');
+              document.documentElement.classList.remove('dark');
+          }
+      }
+
+      // Establecer tema inicial basado en preferencias del sistema
+      setTheme(prefersDarkScheme.matches);
+
+      // Escuchar cambios en las preferencias del sistema
+      prefersDarkScheme.addEventListener('change', (e) => {
+          setTheme(e.matches);
+      });
+</script>
+{% endblock %}

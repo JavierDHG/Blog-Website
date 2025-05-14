@@ -18,8 +18,10 @@
 
 .post-form-container {
   max-width: 800px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #f9f9f9; /* Corregido */
+  border-radius: 8px; /* Corregido */
 }
 
 .post-form-title {
@@ -95,14 +97,11 @@
 }
 
 .file-input-wrapper {
-  position: relative;
+  height: 45px; /* Corregido */
+  background-color: #fff; /* Corregido */
 }
-
 .file-input-custom {
-  display: flex;
-  border: 1px solid var(--border-color);
-  border-radius: 0.375rem;
-  overflow: hidden;
+  border-radius: 5px; /* Corregido */
 }
 
 .file-input-custom span {

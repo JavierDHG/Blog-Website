@@ -1,9 +1,8 @@
 {% extends 'layouts/layout.html' %}
-{% load static %}
-{% block title%}{{title}}{% endblock %}
-{% block extra_css %}
-<!-- CSS específico de esta página -->
-<link rel="stylesheet" href="{% static 'css/post.css' %}" />
+{% block title%}{{title}}{% endblock %} 
+{%load static %} 
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/post.css' %}" type="text/css" />
 {% endblock %}
 {% block content %}
 <div class="post-form-container">
@@ -72,4 +71,54 @@
     </form>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const fileInput = document.getElementById("image_post");
+    const fileNameDisplay = document.getElementById("file-name");
+    const fileButton = document.querySelector(".file-button");
+    const imagePreview = document.getElementById("image-preview");
+    const previewImg = document.getElementById("preview-img");
+    const removeButton = document.getElementById("remove-image");
+    const contentTextarea = document.getElementById("content");
+    const charCount = document.getElementById("char-count");
+    const charMax = document.getElementById("char-max");
+
+    // Actualizar el contador de caracteres
+    charMax.textContent = contentTextarea.getAttribute("maxlength");
+
+    contentTextarea.addEventListener("input", function () {
+      charCount.textContent = this.value.length;
+    });
+
+    // Manejar la selección de archivo
+    fileButton.addEventListener("click", function () {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", function () {
+      if (this.files && this.files[0]) {
+        const file = this.files[0];
+        fileNameDisplay.textContent = file.name;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          previewImg.src = e.target.result;
+          imagePreview.classList.remove("hidden");
+        };
+        reader.readAsDataURL(file);
+      } else {
+        fileNameDisplay.textContent = "Ningún archivo seleccionado";
+        imagePreview.classList.add("hidden");
+      }
+    });
+
+    // Eliminar la imagen seleccionada
+    removeButton.addEventListener("click", function () {
+      fileInput.value = "";
+      fileNameDisplay.textContent = "Ningún archivo seleccionado";
+      imagePreview.classList.add("hidden");
+    });
+  });
+</script>
 {% endblock %}
