@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 # Create your views here.
 def create_post(request):
     if not request.user.is_authenticated:
-        return redirect('show_post')
+        return redirect('login')
     else:
         if request.method == 'POST':
             image = request.FILES.get('image_post')
@@ -34,14 +34,14 @@ def page(request, slug):
 
 
 def show_post(request):
-    posts = Blog.objects.all()
+    posts = Blog.objects.all().order_by('created_at')
     paginator = Paginator(posts, 6)
     # recoger el numero de la pagina
     page= request.GET.get('page')
     # para guardar los articulos de la pagina
     page_articles= paginator.get_page(page)
     return render(request, 'mainapp/index.html', {
-        'title': 'Home',
+        'title': 'Pagina Principal',
         'posts': page_articles,
     })
 

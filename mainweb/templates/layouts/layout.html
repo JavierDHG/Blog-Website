@@ -1,37 +1,232 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %} {{title}} {% endblock %}</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'dist/styles.css' %}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %} {% endblock %}</title>
-</head>
-<body>
-    <header>
-        <div>
-            <h1 class="title text-center text-3xl font-bold underline cursor-pointer">Blog</h1>
-        </div>
-        
-    </header>
-    <nav>
-        <ul>
-            <a href="{% url "show_post" %}">Inicio</a>
-            <a href="{% url "login" %}">Login</a>
-            <a href="{% url "register" %}">Register</a>
-            <a href="{% url "logout" %}">Logout</a>
-            <a href="{% url "create_post" %}">Crear Post</a>
-        </ul>
-        {% for page in pages %}
-            <li>
-                <a href="{% url 'page' page.2 %}">{{page.1}}</a>
+    <!-- Estilos de Tailwind -->
+    <link
+      href="{% static 'css/layout.css' %}"
+      type="text/css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Navbar mejorado -->
+    <nav class="navbar dropdown">
+      <div class="navbar-container">
+        <a href="{% url 'show_post' %}" class="navbar-logo">
+          <span>Mi Blog</span>
+        </a>
+
+        <div class="navbar-menu">
+          <ul id="navbar-links" class="navbar-links">
+            <li class="navbar-link">
+              <a href="{% url 'show_post' %}">Inicio</a>
             </li>
-        {% endfor %}
+            <li class="navbar-link">
+              <a href="{% url 'create_post' %}">Crear Post</a>
+            </li>
+
+            <!-- Dropdown para páginas -->
+            <li class="navbar-link dropdown">
+              <div class="dropdown-button" id="pages-dropdown-button">
+                Páginas
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+              <div class="dropdown-menu" id="pages-dropdown-menu">
+                {% for page in pages %}
+                <a href="{% url 'page' page.2 %}" class="dropdown-item"
+                  >{{page.1}}</a
+                >
+                {% endfor %}
+                <!-- Si no hay páginas, mostrar un mensaje -->
+                {% if not pages %}
+                <span class="dropdown-item">No hay páginas</span>
+                {% endif %}
+              </div>
+            </li>
+          </ul>
+
+          <div class="navbar-actions">
+            <!-- Enlaces de autenticación -->
+            <div class="dropdown">
+              <div class="dropdown-button" id="auth-dropdown-button">
+                Cuenta
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+              <div class="dropdown-menu" id="auth-dropdown-menu">
+                <a href="{% url 'login' %}" class="dropdown-item"
+                  >Iniciar sesión</a
+                >
+                <a href="{% url 'register' %}" class="dropdown-item"
+                  >Registrarse</a
+                >
+                <a href="{% url 'logout' %}" class="dropdown-item"
+                  >Cerrar sesión</a
+                >
+              </div>
+            </div>
+
+            <!-- Toggle de tema -->
+            <button id="theme-toggle" class="theme-toggle">
+              <!-- Icono de sol (modo oscuro) -->
+              <svg
+                id="sun-icon"
+                class="hidden dark:block w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                />
+              </svg>
+              <!-- Icono de luna (modo claro) -->
+              <svg
+                id="moon-icon"
+                class="block dark:hidden w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+                />
+              </svg>
+            </button>
+
+            <!-- Botón de menú móvil -->
+            <button id="mobile-toggle" class="mobile-toggle">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
     </nav>
 
-    <div>
-        {% block content %}
-        {% endblock %}
-    </div>
-</body>
+    <!-- Main content -->
+    <main class="container py-6">
+      <div class="content-card">{% block content %} {% endblock %}</div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-700 mt-auto">
+      <div class="container py-4">
+        <p class="text-center text-sm">
+          © {% now "Y" %} Mi Blog. Todos los derechos reservados.
+        </p>
+      </div>
+    </footer>
+
+    <!-- JavaScript para el navbar mejorado -->
+    <script>
+      // Toggle del menú móvil
+      document
+        .getElementById("mobile-toggle")
+        .addEventListener("click", function () {
+          const navbarLinks = document.getElementById("navbar-links");
+          navbarLinks.classList.toggle("active");
+        });
+
+      // Toggle del dropdown de páginas
+      document
+        .getElementById("pages-dropdown-button")
+        .addEventListener("click", function (e) {
+          e.stopPropagation();
+          const pagesDropdown = document.getElementById("pages-dropdown-menu");
+          pagesDropdown.classList.toggle("active");
+
+          // Cerrar el otro dropdown si está abierto
+          const authDropdown = document.getElementById("auth-dropdown-menu");
+          if (authDropdown.classList.contains("active")) {
+            authDropdown.classList.remove("active");
+          }
+        });
+
+      // Toggle del dropdown de autenticación
+      document
+        .getElementById("auth-dropdown-button")
+        .addEventListener("click", function (e) {
+          e.stopPropagation();
+          const authDropdown = document.getElementById("auth-dropdown-menu");
+          authDropdown.classList.toggle("active");
+
+          // Cerrar el otro dropdown si está abierto
+          const pagesDropdown = document.getElementById("pages-dropdown-menu");
+          if (pagesDropdown.classList.contains("active")) {
+            pagesDropdown.classList.remove("active");
+          }
+        });
+
+      // Cerrar dropdowns al hacer clic fuera
+      document.addEventListener("click", function (e) {
+        const pagesDropdown = document.getElementById("pages-dropdown-menu");
+        const authDropdown = document.getElementById("auth-dropdown-menu");
+
+        if (pagesDropdown.classList.contains("active")) {
+          pagesDropdown.classList.remove("active");
+        }
+
+        if (authDropdown.classList.contains("active")) {
+          authDropdown.classList.remove("active");
+        }
+      });
+
+      // Toggle del tema oscuro/claro
+      document
+        .getElementById("theme-toggle")
+        .addEventListener("click", function () {
+          document.documentElement.classList.toggle("dark");
+
+          // Guardar preferencia en localStorage
+          const isDarkMode =
+            document.documentElement.classList.contains("dark");
+          localStorage.setItem("darkMode", isDarkMode);
+        });
+
+      // Verificar preferencia guardada
+      if (
+        localStorage.getItem("darkMode") === "true" ||
+        (localStorage.getItem("darkMode") === null &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      }
+    </script>
+  </body>
 </html>

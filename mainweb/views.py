@@ -14,7 +14,6 @@ def index(request):
     else:
         return redirect('show_post')
 
-
 def about(request):
     return render(request, 'mainapp/about.html', {
         'title': 'Acerca de'
