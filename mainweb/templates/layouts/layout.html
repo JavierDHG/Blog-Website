@@ -23,44 +23,16 @@
         </a>
 
         <div class="navbar-menu">
-          <ul id="navbar-links" class="navbar-links">
-            <li class="navbar-link">
-              <a href="{% url 'show_post' %}">Inicio</a>
-            </li>
-            <li class="navbar-link">
-              <a href="{% url 'create_post' %}">Crear Post</a>
-            </li>
-
-            <!-- Dropdown para páginas -->
-            <li class="navbar-link dropdown">
-              <div class="dropdown-button" id="pages-dropdown-button">
-                Páginas
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </div>
-              <div class="dropdown-menu" id="pages-dropdown-menu">
-                {% for page in pages %}
-                <a href="{% url 'page' page.2 %}" class="dropdown-item"
-                  >{{page.1}}</a
-                >
-                {% endfor %}
-                <!-- Si no hay páginas, mostrar un mensaje -->
-                {% if not pages %}
-                <span class="dropdown-item">No hay páginas</span>
-                {% endif %}
-              </div>
-            </li>
-          </ul>
+          <div class="dropdown-button" id="pages-dropdown-button"></div>
+            <ul id="navbar-links" class="navbar-links">
+              <li class="navbar-link">
+                <a href="{% url 'show_post' %}">Inicio</a>
+              </li>
+              <li class="navbar-link">
+                <a href="{% url 'create_post' %}">Crear Post</a>
+              </li>
+            </ul>
+          </div>
 
           <div class="navbar-actions">
             <!-- Enlaces de autenticación -->
@@ -82,12 +54,12 @@
               </div>
               <div class="dropdown-menu" id="auth-dropdown-menu">
                 {% if user.is_authenticated %}
-                <a href="" class="dropdown-item"
+                <a href="{% url 'profile' %}" class="dropdown-item"
                   >Perfil</a
                 >
                 {% endif %}
                 {% if user.is_authenticated %}
-                <a href="" class="dropdown-item"
+                <a href="{% url 'my_post' %}" class="dropdown-item"
                   >Mis Posts</a
                 >
                 {% endif %}

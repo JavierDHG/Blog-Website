@@ -1,5 +1,4 @@
 from django import forms
-from .models import Blog, Mis_Posts, Comentarios
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 

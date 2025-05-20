@@ -1,0 +1,193 @@
+{% extends 'layouts/layout.html' %}
+{% load static %} 
+
+{% block title %} {{title}} {% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/edit_post.css' %}" type="text/css" />
+{% endblock %}
+
+{% block content %}
+<div class="edit-post-container">
+
+    <div class="edit-post-card">
+        <form method="POST" enctype="multipart/form-data" class="edit-post-form">
+            {% csrf_token %}
+            <input type="hidden" name="post_id" value="{{ post.id }}">
+            <input type="hidden" name="action" value="update_post">
+            
+            <div class="form-group">
+                <label class="form-label">Featured Image</label>
+                <div class="image-upload-container">
+                    <div class="current-image-container">
+                        {% if post.imagen_post %}
+                        <img src="{{ post.imagen_post.url }}" alt="Current post image" class="current-image" id="currentImage">
+                        {% else %}
+                        <div class="no-image">
+                            <svg class="no-image-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                            </svg>
+                            <span>No image</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="image-upload-controls">
+                        <div class="file-input-wrapper">
+                            <input type="file" name="image_post" id="imageInput" class="file-input" accept="image/*" onchange="previewImage(this)">
+                            <label for="imageInput" class="file-input-label">
+                                <svg class="upload-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                                Cambiar imagen
+                            </label>
+                        </div>
+                        <div class="file-name" id="fileName">No file chosen</div>
+                        {% if post.imagen_post %}
+                        <div class="image-actions">
+                            <button type="button" class="remove-image-button" id="removeImageBtn" onclick="removeImage()">
+                                <svg class="remove-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                Eliminar imagen
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <p class="form-help-text">Recommended size: 1200 x 630 pixels (16:9 ratio)</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="title" class="form-label">Titulo</label>
+                <input type="text" name="title" id="title" value="{{ post.title }}" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="content" class="form-label">Contenido</label>
+                <textarea name="content" id="content" class="form-textarea" rows="10" required>{{ post.content }}</textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="save-button">
+                    <svg class="button-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    Guardar cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Función para previsualizar la imagen seleccionada
+    function previewImage(input) {
+        const currentImage = document.getElementById('currentImage');
+        const fileName = document.getElementById('fileName');
+        const removeBtn = document.getElementById('removeImageBtn');
+        const noImage = document.querySelector('.no-image');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                // Si ya existe una imagen, actualizar su src
+                if (currentImage) {
+                    currentImage.src = e.target.result;
+                    currentImage.style.display = 'block';
+                    if (noImage) noImage.style.display = 'none';
+                } 
+                // Si no existe, crear una nueva imagen
+                else {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.id = 'currentImage';
+                    img.className = 'current-image';
+                    
+                    const container = document.querySelector('.current-image-container');
+                    container.innerHTML = '';
+                    container.appendChild(img);
+                }
+                
+                // Mostrar el nombre del archivo
+                fileName.textContent = input.files[0].name;
+                
+                // Mostrar el botón de eliminar si no existe
+                if (!removeBtn) {
+                    const imageActions = document.createElement('div');
+                    imageActions.className = 'image-actions';
+                    imageActions.innerHTML = `
+                        <button type="button" class="remove-image-button" id="removeImageBtn" onclick="removeImage()">
+                            <svg class="remove-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            Remove image
+                        </button>
+                    `;
+                    document.querySelector('.image-upload-controls').appendChild(imageActions);
+                }
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    // Función para eliminar la imagen
+    function removeImage() {
+        const currentImage = document.getElementById('currentImage');
+        const fileName = document.getElementById('fileName');
+        const fileInput = document.getElementById('imageInput');
+        const removeBtn = document.getElementById('removeImageBtn');
+        
+        if (currentImage) {
+            const container = document.querySelector('.current-image-container');
+            container.innerHTML = `
+                <div class="no-image">
+                    <svg class="no-image-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                    </svg>
+                    <span>No image</span>
+                </div>
+            `;
+        }
+        
+        // Resetear el input de archivo
+        if (fileInput) {
+            fileInput.value = '';
+        }
+        
+        // Actualizar el texto del nombre de archivo
+        fileName.textContent = 'No file chosen';
+        
+        // Eliminar el botón de eliminar
+        if (removeBtn) {
+            removeBtn.parentElement.remove();
+        }
+        
+        // Añadir un campo oculto para indicar que se debe eliminar la imagen
+        const form = document.querySelector('.edit-post-form');
+        const removeImageInput = document.createElement('input');
+        removeImageInput.type = 'hidden';
+        removeImageInput.name = 'remove_image';
+        removeImageInput.value = 'true';
+        form.appendChild(removeImageInput);
+    }
+    
+    // Actualizar el nombre del archivo al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('imageInput');
+        const fileName = document.getElementById('fileName');
+        
+        if (fileInput && fileName) {
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length > 0) {
+                    fileName.textContent = fileInput.files[0].name;
+                } else {
+                    fileName.textContent = 'No file chosen';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

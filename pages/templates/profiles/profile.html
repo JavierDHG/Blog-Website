@@ -1,0 +1,391 @@
+{% extends 'layouts/layout.html' %}
+{% load static %} 
+
+{% block title %} {{title}} {% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}" type="text/css" />
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h1 class="profile-title">Mi Perfil</h1>
+    </div>
+
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                <div class="message-icon">
+                    {% if message.tags == 'success' %}
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    {% elif message.tags == 'error' %}
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                    {% else %}
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    {% endif %}
+                </div>
+                <div class="message-content">{{ message }}</div>
+                <button type="button" class="message-close" onclick="this.parentElement.remove()">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="profile-tabs">
+        <button type="button" class="tab-button active" onclick="showTab('profile-info')">Información Personal</button>
+        <button type="button" class="tab-button" onclick="showTab('security')">Seguridad</button>
+    </div>
+
+    <div class="profile-content">
+        <div id="profile-info" class="tab-content active">
+            <div class="profile-card">
+                <h2 class="card-title">Información Personal</h2>
+                <p class="card-description">Actualiza tu información personal y datos de contacto.</p>
+                
+                <form method="POST" class="profile-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update_profile">
+                    
+                    <div class="form-group">
+                        <label for="username" class="form-label">Nombre de usuario</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                            </svg>
+                            <input type="text" id="username" name="username" value="{{ username }}" class="form-input" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first_name" class="form-label">Nombre</label>
+                            <div class="input-wrapper">
+                                <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                                </svg>
+                                <input type="text" id="first_name" name="first_name" value="{{ first_name }}" class="form-input">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="last_name" class="form-label">Apellido</label>
+                            <div class="input-wrapper">
+                                <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                                </svg>
+                                <input type="text" id="last_name" name="last_name" value="{{ last_name }}" class="form-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email" class="form-label">Correo electrónico</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                            </svg>
+                            <input type="email" id="email" name="email" value="{{ email }}" class="form-input" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="save-button">
+                            <svg class="button-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Guardar cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div id="security" class="tab-content">
+            <div class="profile-card">
+                <h2 class="card-title">Cambiar Contraseña</h2>
+                <p class="card-description">Actualiza tu contraseña para mantener tu cuenta segura.</p>
+                
+                <form method="POST" class="profile-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change_password">
+                    
+                    <div class="form-group">
+                        <label for="current_password" class="form-label">Contraseña actual</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                            <input type="password" id="current_password" name="current_password" class="form-input password-input" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('current_password')">
+                                <svg class="eye-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                </svg>
+                                <svg class="eye-off-icon hidden" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
+                                    <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="new_password" class="form-label">Nueva contraseña</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                            <input type="password" id="new_password" name="new_password" class="form-input password-input" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('new_password')">
+                                <svg class="eye-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                </svg>
+                                <svg class="eye-off-icon hidden" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
+                                    <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="password-strength" id="password-strength">
+                            <div class="strength-bar">
+                                <div class="strength-progress" id="strength-progress"></div>
+                            </div>
+                            <div class="strength-text" id="strength-text">Fuerza de la contraseña</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm_password" class="form-label">Confirmar nueva contraseña</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-input password-input" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('confirm_password')">
+                                <svg class="eye-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                </svg>
+                                <svg class="eye-off-icon hidden" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
+                                    <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="password-match" id="password-match"></div>
+                    </div>
+                    
+                    <div class="password-requirements">
+                        <h3 class="requirements-title">La contraseña debe contener:</h3>
+                        <ul class="requirements-list">
+                            <li id="req-length">Al menos 8 caracteres</li>
+                            <li id="req-uppercase">Al menos una letra mayúscula</li>
+                            <li id="req-lowercase">Al menos una letra minúscula</li>
+                            <li id="req-number">Al menos un número</li>
+                            <li id="req-special">Al menos un carácter especial</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="save-button" id="password-submit">
+                            <svg class="button-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                            Cambiar contraseña
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Función para cambiar entre pestañas
+    function showTab(tabId) {
+        // Ocultar todas las pestañas
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Desactivar todos los botones de pestaña
+        const tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(button => {
+            button.classList.remove('active');
+        });
+        
+        // Mostrar la pestaña seleccionada
+        document.getElementById(tabId).classList.add('active');
+        
+        // Activar el botón correspondiente
+        event.currentTarget.classList.add('active');
+    }
+    
+    // Función para mostrar/ocultar contraseña
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const button = input.nextElementSibling;
+        const eyeIcon = button.querySelector('.eye-icon');
+        const eyeOffIcon = button.querySelector('.eye-off-icon');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            eyeIcon.classList.add('hidden');
+            eyeOffIcon.classList.remove('hidden');
+        } else {
+            input.type = 'password';
+            eyeIcon.classList.remove('hidden');
+            eyeOffIcon.classList.add('hidden');
+        }
+    }
+    
+    // Validación de contraseña
+    document.addEventListener('DOMContentLoaded', function() {
+        const newPassword = document.getElementById('new_password');
+        const confirmPassword = document.getElementById('confirm_password');
+        const strengthProgress = document.getElementById('strength-progress');
+        const strengthText = document.getElementById('strength-text');
+        const passwordMatch = document.getElementById('password-match');
+        const submitButton = document.getElementById('password-submit');
+        
+        // Requisitos de contraseña
+        const reqLength = document.getElementById('req-length');
+        const reqUppercase = document.getElementById('req-uppercase');
+        const reqLowercase = document.getElementById('req-lowercase');
+        const reqNumber = document.getElementById('req-number');
+        const reqSpecial = document.getElementById('req-special');
+        
+        // Función para verificar la fuerza de la contraseña
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            let feedback = '';
+            
+            // Verificar longitud
+            if (password.length >= 8) {
+                strength += 20;
+                reqLength.classList.add('valid');
+            } else {
+                reqLength.classList.remove('valid');
+            }
+            
+            // Verificar mayúsculas
+            if (/[A-Z]/.test(password)) {
+                strength += 20;
+                reqUppercase.classList.add('valid');
+            } else {
+                reqUppercase.classList.remove('valid');
+            }
+            
+            // Verificar minúsculas
+            if (/[a-z]/.test(password)) {
+                strength += 20;
+                reqLowercase.classList.add('valid');
+            } else {
+                reqLowercase.classList.remove('valid');
+            }
+            
+            // Verificar números
+            if (/[0-9]/.test(password)) {
+                strength += 20;
+                reqNumber.classList.add('valid');
+            } else {
+                reqNumber.classList.remove('valid');
+            }
+            
+            // Verificar caracteres especiales
+            if (/[^A-Za-z0-9]/.test(password)) {
+                strength += 20;
+                reqSpecial.classList.add('valid');
+            } else {
+                reqSpecial.classList.remove('valid');
+            }
+            
+            // Actualizar barra de progreso
+            strengthProgress.style.width = strength + '%';
+            
+            // Determinar color y texto según la fuerza
+            if (strength < 40) {
+                strengthProgress.style.backgroundColor = '#ef4444'; // Rojo
+                feedback = 'Débil';
+            } else if (strength < 80) {
+                strengthProgress.style.backgroundColor = '#f59e0b'; // Amarillo
+                feedback = 'Moderada';
+            } else {
+                strengthProgress.style.backgroundColor = '#10b981'; // Verde
+                feedback = 'Fuerte';
+            }
+            
+            strengthText.textContent = 'Fuerza: ' + feedback;
+            
+            return strength >= 80; // Retorna true si la contraseña es fuerte
+        }
+        
+        // Función para verificar si las contraseñas coinciden
+        function checkPasswordMatch() {
+            if (confirmPassword.value === '') {
+                passwordMatch.textContent = '';
+                passwordMatch.className = 'password-match';
+                return false;
+            } else if (newPassword.value === confirmPassword.value) {
+                passwordMatch.textContent = 'Las contraseñas coinciden';
+                passwordMatch.className = 'password-match match';
+                return true;
+            } else {
+                passwordMatch.textContent = 'Las contraseñas no coinciden';
+                passwordMatch.className = 'password-match no-match';
+                return false;
+            }
+        }
+        
+        // Eventos para validar la contraseña
+        if (newPassword) {
+            newPassword.addEventListener('input', function() {
+                checkPasswordStrength(this.value);
+                if (confirmPassword.value !== '') {
+                    checkPasswordMatch();
+                }
+            });
+        }
+        
+        if (confirmPassword) {
+            confirmPassword.addEventListener('input', function() {
+                checkPasswordMatch();
+            });
+        }
+        
+        // Validar formulario antes de enviar
+        const passwordForm = document.querySelector('form[name="action"][value="change_password"]');
+        if (passwordForm) {
+            passwordForm.addEventListener('submit', function(event) {
+                const isStrong = checkPasswordStrength(newPassword.value);
+                const isMatch = checkPasswordMatch();
+                
+                if (!isStrong || !isMatch) {
+                    event.preventDefault();
+                    
+                    if (!isStrong) {
+                        alert('Por favor, crea una contraseña más segura.');
+                    } else if (!isMatch) {
+                        alert('Las contraseñas no coinciden.');
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

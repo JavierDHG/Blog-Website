@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from mainweb.forms import RegisterForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .models import Blog
 from django.core.paginator import Paginator
 
 # Create your views here.

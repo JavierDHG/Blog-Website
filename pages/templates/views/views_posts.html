@@ -237,144 +237,123 @@
       {% endfor %}
     </div>
   </div>
-  {% endif %} {% if comments_enabled %}
+  {% endif %} 
   <div class="comments-section">
     <h3 class="comments-title">Comentarios ({{ comments.count }})</h3>
-
-    <form
-      class="comment-form"
-      method="post"
-      action="{% url 'add_comment' post.id %}"
-    >
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="comment-content" class="form-label"
-          >Deja tu comentario</label
-        >
-        <textarea
-          id="comment-content"
-          name="content"
-          class="comment-textarea"
-          required
-        ></textarea>
-      </div>
-      <button type="submit" class="comment-button">Publicar comentario</button>
-    </form>
+    {% if post.id %}
+      <form
+        class="comment-form"
+        method="post"
+        action="{% url 'add_comment' post.id %}"
+      >
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="comment-content" class="form-label"
+            >Deja tu comentario</label
+          >
+          <textarea
+            id="comment-content"
+            name="texto"
+            class="comment-textarea"
+            required
+          ></textarea>
+        </div>
+        <button type="submit" class="comment-button">Publicar comentario</button>
+      </form>
+    {% endif %}
 
     <div class="comments-list">
       {% for comment in comments %}
-      <div class="comment">
-        <div class="comment-header">
-          <div class="comment-author">
-            {% if comment.user.profile_image %}
-            <img
-              src="{{ comment.user.profile_image.url }}"
-              alt="{{ comment.user.username }}"
-              class="comment-author-image"
-            />
-            {% else %}
-            <div class="comment-author-initial">
-              {{ comment.user.username|first }}
-            </div>
-            {% endif %}
-            <span class="comment-author-name"
-              >{{ comment.user.get_full_name|default:comment.user.username
-              }}</span
-            >
-          </div>
-          <time
-            datetime="{{ comment.created_at|date:'Y-m-d H:i' }}"
-            class="comment-date"
-            >{{ comment.created_at|date:"d F, Y H:i" }}</time
-          >
-        </div>
-        <div class="comment-content">{{ comment.content }}</div>
-        <div class="comment-actions">
-          <button
-            class="comment-reply-button"
-            data-comment-id="{{ comment.id }}"
-          >
-            Responder
-          </button>
-        </div>
-
-        {% if comment.replies.all %}
-        <div class="comment-replies">
-          {% for reply in comment.replies.all %}
-          <div class="comment reply">
-            <div class="comment-header">
-              <div class="comment-author">
-                {% if reply.user.profile_image %}
+        <div class="comment">
+          <div class="comment-header">
+            <div class="comment-author">
+              {% if comment.autor.profile_image %}
                 <img
-                  src="{{ reply.user.profile_image.url }}"
-                  alt="{{ reply.user.username }}"
+                  src="{{ comment.autor.profile_image.url }}"
+                  alt="{{ comment.autor.username }}"
                   class="comment-author-image"
                 />
-                {% else %}
-                <div class="comment-author-initial">
-                  {{ reply.user.username|first }}
-                </div>
-                {% endif %}
-                <span class="comment-author-name"
-                  >{{ reply.user.get_full_name|default:reply.user.username
-                  }}</span
-                >
-              </div>
-              <time
-                datetime="{{ reply.created_at|date:'Y-m-d H:i' }}"
-                class="comment-date"
-                >{{ reply.created_at|date:"d F, Y H:i" }}</time
-              >
+              {% else %}
+                <img
+                  src="{% static 'img/profile-default.png' %}"
+                  alt="Usuario"
+                  class="comment-author-image"
+                />
+              {% endif %}
+              <span class="comment-author-name">
+                {{ comment.autor.username }}
+              </span>
             </div>
-            <div class="comment-content">{{ reply.content }}</div>
+            <time
+              datetime="{{ comment.created_at|date:'Y-m-d H:i' }}"
+              class="comment-date"
+              >{{ comment.created_at|date:"d F, Y H:i" }}</time
+            >
           </div>
-          {% endfor %}
-        </div>
-        {% endif %}
+          <div class="comment-content">{{ comment.texto }}</div>
+          <div class="comment-actions">
+            <button
+              class="comment-reply-button"
+              data-comment-id="{{ comment.id }}"
+              action = "{% url 'add_comment' post.id %}"
+            >
+              Responder
+            </button>
+          </div>
+          <!-- Formulario de respuesta oculto por defecto -->
+          <div class="reply-form-container" id="reply-form-{{ comment.id }}" style="display: none;">
+            <form method="post" action="{% url 'add_comment' post.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="parent_id" value="{{ comment.id }}">
+              <div class="form-group">
+                <textarea name="texto" class="comment-textarea" required placeholder="Escribe tu respuesta..."></textarea>
+              </div>
+              <button type="submit" class="comment-button">Responder</button>
+              <button type="button" class="cancel-reply-button" data-comment-id="{{ comment.id }}">Cancelar</button>
+            </form>
+          </div>
 
-        <div
-          class="reply-form-container"
-          id="reply-form-{{ comment.id }}"
-          style="display: none"
-        >
-          <form
-            class="reply-form"
-            method="post"
-            action="{% url 'add_reply' comment.id %}"
-          >
-            {% csrf_token %}
-            <div class="form-group">
-              <label for="reply-content-{{ comment.id }}" class="form-label"
-                >Tu respuesta</label
-              >
-              <textarea
-                id="reply-content-{{ comment.id }}"
-                name="content"
-                class="reply-textarea"
-                required
-              ></textarea>
-            </div>
-            <div class="reply-actions">
-              <button
-                type="button"
-                class="cancel-reply-button"
-                data-comment-id="{{ comment.id }}"
-              >
-                Cancelar
-              </button>
-              <button type="submit" class="reply-button">Responder</button>
-            </div>
-          </form>
+          {% if comment.replies.all %}
+          <div class="comment-replies">
+            {% for reply in comment.replies.all %}
+            <div class="comment reply">
+              <div class="comment-header">
+                  <div class="comment-author">
+                      {% if reply.autor.profile_image %}
+                          <img
+                              src="{{ reply.autor.profile_image.url }}"
+                              alt="{{ reply.autor.username }}"
+                              class="comment-author-image"
+                          />
+                      {% else %}
+                          <img
+                              src="{% static 'img/profile-default.png' %}"
+                              alt="Usuario"
+                              class="comment-author-image"
+                          />
+                      {% endif %}
+                      <span class="comment-author-name">
+                          {{ reply.autor.username }}
+                      </span>
+                  </div>
+                  <time
+                      datetime="{{ reply.created_at|date:'Y-m-d H:i' }}"
+                      class="comment-date"
+                  >{{ reply.created_at|date:"d F, Y H:i" }}</time>
+              </div>
+              <div class="comment-content">{{ reply.texto }}</div>
+          </div>
+            {% endfor %}
+          </div>
+          {% endif %}
         </div>
-      </div>
-      {% empty %}
-      <div class="no-comments">
-        <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
-      </div>
+        {% empty %}
+        <div class="no-comments">
+          <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
+        </div>
       {% endfor %}
     </div>
   </div>
-  {% endif %}
 </article>
 
 <script>

@@ -32,3 +32,26 @@ class Page(models.Model):
     class Meta:
         verbose_name = 'Pagina'
         verbose_name_plural = 'Paginas'
+
+class Mis_Posts(models.Model):
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='mis_posts')
+
+    def __str__(self):
+        return  (f"Post de {self.blog.titulo}")
+    
+    class Meta:
+        verbose_name = 'Mis Posts'
+        verbose_name_plural = 'Mis Posts'
+
+class Comentarios(models.Model):
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='comentarios')
+    autor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comentarios')
+    texto = models.TextField(max_length=250)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
+
+    def __str__(self):
+        return (f"Comentario de {self.autor.name} en el post {self.blog.title}")
+    
+    class Meta:
+        verbose_name = 'Comentarios'
+        verbose_name_plural = 'Comentarios'
